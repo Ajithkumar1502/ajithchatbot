@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title> AI Chatbot</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>🧠  AI Chatbot</h1>
+    <div id="chat-box" class="chat-box">
+  <div class="chat-bubble bot">
+    <span>Bot:</span> 👋 Hi there! How can I help you today?
+  </div>
+</div>
+
+    <div class="input-area">
+      <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off" />
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <script>
+    async function sendMessage() {
+      const input = document.getElementById("user-input");
+      const chatBox = document.getElementById("chat-box");
+      const message = input.value.trim();
+      if (!message) return;
+
+      chatBox.innerHTML += `<div class="chat-bubble user"><span>You:</span> ${message}</div>`;
+
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+      });
+
+      const data = await res.json();
+      chatBox.innerHTML += `<div class="chat-bubble bot"><span>Bot:</span> ${data.reply}</div>`;
+
+      input.value = "";
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    document.getElementById("user-input").addEventListener("keypress", function (e) {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
